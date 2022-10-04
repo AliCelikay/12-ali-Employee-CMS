@@ -2,6 +2,7 @@
 2) add the 3 packages in package.json
 3)Set up folders for db(sql),
 4) Set up packages in server.js
+4) Set up prompts for the first questions(init funtion)
 
 
 GIVEN a command-line application that accepts user input
