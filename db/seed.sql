@@ -15,12 +15,13 @@ VALUES ("Sales Lead", 100000, 4),
        ("Lawer", 190000, 3);
 
 INSERT INTO employeeTable (first_name, last_name, role_id, manager_id)
-VALUES ("Naruto", "Uzumaki", 1, NULL),
-        ("Sasuke", "Uchiha", 2, 1),
+VALUES ("Naruto", "Uzumaki", 2, NULL),
+        ("Sasuke", "Uchiha", 1, 1),
         ("Sakura", "Haruno", 2, NULL),
         ("Kakashi", "Hatake", 3, 2),
-        ("Jiraya", "Unknown", 1, 3),
+        ("Jiraya", "Unknown", 6, NULL),
         ("Rock", "Lee", 4, 4),
         ("Itachi", "Uchiha", 4, NULL),
-        ("Neji", "Hyuga", 3, NULL),
-        ("Shikamaru", "Nara", 1, NULL);
+        ("Neji", "Hyuga", 7, 3),
+        ("Madara", "uchiha", 5, 4),
+        ("Shikamaru", "Nara", 8, NULL);
