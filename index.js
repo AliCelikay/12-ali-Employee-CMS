@@ -3,6 +3,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2'); 
 const cTable = require('console.table');
+const Roles = require('./lib/roles');
 
 // Connect to database
 const db = mysql.createConnection(
@@ -10,8 +11,9 @@ const db = mysql.createConnection(
       host: 'localhost',
       // MySQL Username
       user: 'root',
-      // TODO: Add MySQL Password
+      //MySQL Password
       password: 'rootroot',
+      //MySQL database
       database: 'employeeCMS_db'
     },
     console.log(`Connected to the employeeCMS_db database.`)
@@ -59,7 +61,7 @@ const userQuery = (ans) => {
         break;
 
         case 'Add an employee':
-            // viewAllDepartments();
+            addEmployee();
         break;
 
         case 'Update an employee role':
@@ -93,16 +95,20 @@ const viewAllRoles = () => {
 
 //View all employees query
 const viewAllEmployees = () => {
-    db.query(`SELECT employeeTable.id AS id, 
-    employeeTable.first_name AS first_name,
-    employeeTable.last_name AS last_name,
-    rolesTable.role_title AS title,
-    departmentTable.department_name AS department
+    db.query(`SELECT employeeTable.id, 
+    employeeTable.first_name,
+    employeeTable.last_name,
+    rolesTable.role_title,
+    departmentTable.department_name AS department,
+    rolesTable.role_salary,
+    employeeTable.manager_id AS manager,
+    CONCAT (manager.first_name, ' ', manager.last_name) AS manager
     FROM employeeTable
     LEFT JOIN rolesTable
     ON employeeTable.role_id = rolesTable.id
     LEFT JOIN departmentTable
-    ON rolesTable.department_id = departmentTable.id`, function (err, results) {
+    ON rolesTable.department_id = departmentTable.id
+    LEFT JOIN employeeTable manager ON manager.id = employeeTable.manager_id`, function (err, results) {
         console.table(results);
         firstQuestion();
     }
@@ -128,15 +134,6 @@ const addDepartment = () => {
 }
 
 const addRole = () => {
-    const departmentChoices = () => {
-        var deptNames;
-        db.query(`SELECT * FROM departmentTable`, function (err, results) {
-            deptNames = posts.map((post) => post.name);
-            return deptNames;    
-        })
-        console.log(deptNames);
-    }
-    departmentChoices();
     inquirer
     .prompt([
         {
@@ -149,30 +146,65 @@ const addRole = () => {
             message: 'Please enter the salary of role:',
             name: 'salary',
         },
-        // {
-        //     type: 'list',
-        //     message: 'Which department does the role belong to:',
-        //     choices: ,
-        //     name: 'department',
-
-        //     db.query('SELECT * FROM departmentTable', function (err, results) {
-        //         console.table(results);
-        //         firstQuestion();
-        //     }
-
-        //     const postIds = posts.map((post) => post.id);
-            
-        // },
+        {
+            type: 'input',
+            message: 'Which department does the role belong to:',
+            name: 'department',
+        },
     ])
     .then((ans) => {
-        var name = ans.name;
-        db.query('INSERT INTO departmentTable (department_name) VALUE (?)', name, function (err, results)  {
-            console.log(`Added ${name} to database`);
-            firstQuestion();
-        })
+        // const getDepartmentId = () => {
+        //     db.query('SELECT * FROM departmentTable WHERE department_name = ?', ans.department , function (err, results) {
+        //         if (err) {
+        //             console.log(err);
+        //         } else {
+        //             const departmentId = results[0].id
+        //             console.log( departmentId);
+                    
+        //         }
+        //     });
+        
+        // }
+        let {name, salary, department} = ans;
+        const newRole = new Roles(name, salary, department);
+        newRole.createNewRole();        
+        firstQuestion();
     })
 }
 
+const addEmployee = () => {
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            message: 'Please enter the first name of employee:',
+            name: 'firstName',
+        },
+        {
+            type: 'input',
+            message: 'Please enter the last name of employee:',
+            name: 'lastName',
+        },
+        {
+            type: 'input',
+            message: 'Please enter the role of employee:',
+            name: 'role',
+        },
+        {
+            type: 'input',
+            message: 'Who is the manager of employee:',
+            name: 'manager',
+        },
+    ])
+    .then((ans) => {
+        
+        
+        
+        
+
+        firstQuestion();
+    })
+}
 
 
 //Calling Initial start of application
