@@ -3,7 +3,9 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2'); 
 const cTable = require('console.table');
+//custom packages
 const Roles = require('./lib/roles');
+const Employees = require('./lib/employee');
 
 // Connect to database
 const db = mysql.createConnection(
@@ -31,7 +33,6 @@ const firstQuestion = () => {
         },
     ])
     .then((ans) => {
-        // console.table(ans);
         userQuery(ans);
     })
 }
@@ -65,11 +66,11 @@ const userQuery = (ans) => {
         break;
 
         case 'Update an employee role':
-            // viewAllDepartments();
+            updateEmployee();
         break;
 
         case 'Quit':
-            console.log("Thank you!\bGoodbye.");
+            console.log(`Goodbye.`);
         break;
         
         default:
@@ -134,6 +135,11 @@ const addDepartment = () => {
 }
 
 const addRole = () => {
+    //query listens for the inquirer promt to be over
+    db.query('SELECT department_name AS name, id AS value FROM departmentTable', function (err, departmentList) {
+        //crashes app
+        if(err) throw err;
+
     inquirer
     .prompt([
         {
@@ -147,32 +153,34 @@ const addRole = () => {
             name: 'salary',
         },
         {
-            type: 'input',
+            type: 'list',
             message: 'Which department does the role belong to:',
+            choices: departmentList,
             name: 'department',
         },
     ])
     .then((ans) => {
-        // const getDepartmentId = () => {
-        //     db.query('SELECT * FROM departmentTable WHERE department_name = ?', ans.department , function (err, results) {
-        //         if (err) {
-        //             console.log(err);
-        //         } else {
-        //             const departmentId = results[0].id
-        //             console.log( departmentId);
-                    
-        //         }
-        //     });
-        
-        // }
         let {name, salary, department} = ans;
-        const newRole = new Roles(name, salary, department);
-        newRole.createNewRole();        
-        firstQuestion();
+            const newRole = new Roles(name, salary, department);
+            //adding firstQuestion function as a parameter waits for query to finish before running quir prompt so that they dont run at the same time causing an error
+            newRole.createNewRole(firstQuestion);
+        });
     })
 }
 
+
 const addEmployee = () => {
+    //both quieries below listen for the inquirer promt to be over
+    //for listing roles
+    db.query('SELECT role_title AS name, id AS value FROM rolesTable', function (err, roleList) {
+        //crashes app
+        if(err) throw err;
+
+        // for listing manager
+        db.query(`SELECT CONCAT( first_name, ' ', last_name) AS name, id AS value FROM employeeTable`, function (err, managerList) {
+            //crashes app
+            if(err) throw err;
+
     inquirer
     .prompt([
         {
@@ -186,24 +194,70 @@ const addEmployee = () => {
             name: 'lastName',
         },
         {
-            type: 'input',
-            message: 'Please enter the role of employee:',
+            //How to create an array of rolesTable.role_title from data base?
+            type: 'list',
+            message: `What is the employee's role:`,
+            choices: roleList,
             name: 'role',
         },
         {
-            type: 'input',
+            type: 'list',
             message: 'Who is the manager of employee:',
+            choices: managerList,
             name: 'manager',
         },
     ])
     .then((ans) => {
-        
-        
-        
-        
-
-        firstQuestion();
+        let {firstName, lastName, role, manager} = ans;
+        const newEmployee = new Employees(firstName, lastName, role, manager);
+        //adding firstQuestion function as a parameter waits for query to finish before running quir prompt so that they dont run at the same time causing an error
+        newEmployee.createNewEmployee(firstQuestion);
     })
+})
+})
+}
+
+const updateEmployee = () => {
+    //both quieries below listen for the inquirer promt to be over
+    //for listing employee names
+    db.query(`SELECT CONCAT( first_name, ' ', last_name ) AS name, id AS value FROM employeeTable`, function (err, employeeList) {
+        //crashes app
+        if(err) throw err;
+
+        // for listing roles
+        db.query('SELECT role_title AS name, id AS value FROM rolesTable', function (err, rolesList) {
+            //crashes app
+            if(err) throw err;
+
+    inquirer
+    .prompt([
+        {
+            type: 'list',
+            message: 'Which employee do you want to update:',
+            choices: employeeList,
+            name: 'employee',
+        },
+        {
+            type: 'list',
+            message: 'Which role do you want to assign to this employee?',
+            choices: rolesList,
+            name: 'role',
+        },
+    ])
+    .then((ans) => {
+        let {employee, role} = ans;
+        // let name = employee.split(' ');
+        // let last_name = name[1];
+        // console.log(`${employee}, ${role}`);
+        db.query(`UPDATE employeeTable SET role_id = ? WHERE id = ?`, [ role, employee], function (err, result) {
+        //     //crashes app
+            (err) ? console.log( err) : console.log(result);;
+
+        })
+
+    })
+})
+})
 }
 
 
