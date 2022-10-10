@@ -133,9 +133,10 @@ const addDepartment = () => {
         })
     })
 }
-
+// add a role
 const addRole = () => {
     //query listens for the inquirer promt to be over
+    //this is how you can grab all the department names from department table and return it to the user to select from
     db.query('SELECT department_name AS name, id AS value FROM departmentTable', function (err, departmentList) {
         //crashes app
         if(err) throw err;
@@ -168,7 +169,7 @@ const addRole = () => {
     })
 }
 
-
+//add an employee
 const addEmployee = () => {
     //both quieries below listen for the inquirer promt to be over
     //for listing roles
@@ -217,6 +218,7 @@ const addEmployee = () => {
 })
 }
 
+//update an employee
 const updateEmployee = () => {
     //both quieries below listen for the inquirer promt to be over
     //for listing employee names
