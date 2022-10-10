@@ -1,4 +1,9 @@
-This code should allow the user to see the full roster of employees in a company.
-All the details of the employees should be listed when the user checks the roster.
+# Project Title: Employee CMS
 
-This code is not yet finished, I will complete this week and resubmit.
+## Description
+This code allows the user to see all of the departments in a company, all the roles in each department, all of the employees in each roles, the salary of each employee and role, and the manager of each role. The user can view all of this in a neat organized table with description for each column. 
+
+## Usage
+To start this app, you can right click on the index.js file and then write in the command 'node index.js.' You can immediately scroll through each choices using the up and down arrow of your keyboard. Whne you are done you can hit enter on quit.
+
+## Walkthrough Video Link
