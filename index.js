@@ -253,8 +253,8 @@ const updateEmployee = () => {
         // console.log(`${employee}, ${role}`);
         db.query(`UPDATE employeeTable SET role_id = ? WHERE id = ?`, [ role, employee], function (err, result) {
         //     //crashes app
-            (err) ? console.log( err) : console.log(result);;
-
+            (err) ? console.log( err) : console.log(result);
+            firstQuestion();
         })
 
     })
