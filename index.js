@@ -18,7 +18,6 @@ const db = mysql.createConnection(
       //MySQL database
       database: 'employeeCMS_db'
     },
-    // console.log(`Connected to the employeeCMS_db database.`)
 );
 
 //init definition
